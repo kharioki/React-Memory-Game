@@ -16,6 +16,7 @@ function App() {
   const [turns, setTurns] = useState(0);
   const [choiceOne, setChoiceOne] = useState(null);
   const [choiceTwo, setChoiceTwo] = useState(null);
+  const [disabled, setDisabled] = useState(false);
 
   // duplicate cards and randomize cards and shuffle
   const shuffleCards = () => {
@@ -37,16 +38,11 @@ function App() {
 
   }
 
-  // reset choices
-  const resetChoices = () => {
-    setChoiceOne(null);
-    setChoiceTwo(null);
-    setTurns(prevTurns => prevTurns + 1);
-  }
-
   // compare selected cards
   useEffect(() => {
     if (choiceOne && choiceTwo) {
+      setDisabled(true);
+
       if (choiceOne.src === choiceTwo.src) {
         setCards(prevCards => prevCards.map(
           card => {
@@ -61,12 +57,23 @@ function App() {
       } else {
         setTimeout(() => {
           resetChoices();
-        }, 1000);
+        }, 500);
       }
     }
   }, [choiceOne, choiceTwo]);
 
-  console.log(cards);
+  // reset choices
+  const resetChoices = () => {
+    setChoiceOne(null);
+    setChoiceTwo(null);
+    setTurns(prevTurns => prevTurns + 1);
+    setDisabled(false);
+  }
+
+  // start game on page load
+  useEffect(() => {
+    shuffleCards();
+  }, []);
 
   return (
     <div className="App">
@@ -79,9 +86,11 @@ function App() {
             card={card}
             handleChoice={handleChoice}
             flipped={card === choiceOne || card === choiceTwo || card.matched}
+            disabled={disabled}
           />
         ))}
       </div>
+      <p>Turns: {turns}</p>
     </div>
   );
 }
