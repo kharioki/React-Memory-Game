@@ -1,19 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 import SingleCard from './components/SingleCard';
 
 const cardImages = [
-  { src: '/img/helmet-1.png' },
-  { src: '/img/portion-1.png' },
-  { src: '/img/ring-1.png' },
-  { src: '/img/scroll-1.png' },
-  { src: '/img/shield-1.png' },
-  { src: '/img/sword-1.png' },
+  { src: '/img/helmet-1.png', matched: false },
+  { src: '/img/portion-1.png', matched: false },
+  { src: '/img/ring-1.png', matched: false },
+  { src: '/img/scroll-1.png', matched: false },
+  { src: '/img/shield-1.png', matched: false },
+  { src: '/img/sword-1.png', matched: false },
 ];
 
 function App() {
   const [cards, setCards] = useState([]);
   const [turns, setTurns] = useState(0);
+  const [choiceOne, setChoiceOne] = useState(null);
+  const [choiceTwo, setChoiceTwo] = useState(null);
 
   // duplicate cards and randomize cards and shuffle
   const shuffleCards = () => {
@@ -28,7 +30,31 @@ function App() {
     setTurns(0);
   };
 
-  console.log(cards, turns);
+  // handle choice
+  const handleChoice = (card) => {
+    choiceOne ? setChoiceTwo(card) : setChoiceOne(card);
+
+
+  }
+
+  // reset choices
+  const resetChoices = () => {
+    setChoiceOne(null);
+    setChoiceTwo(null);
+    setTurns(prevTurns => prevTurns + 1);
+  }
+
+  useEffect(() => {
+    if (choiceOne && choiceTwo) {
+      if (choiceOne.src === choiceTwo.src) {
+        console.log('match');
+        resetChoices();
+      } else {
+        console.log('no match');
+        resetChoices();
+      }
+    }
+  }, [choiceOne, choiceTwo]);
 
   return (
     <div className="App">
@@ -36,7 +62,11 @@ function App() {
       <button onClick={shuffleCards}>New Game</button>
       <div className="card-grid">
         {cards.map((card) => (
-          <SingleCard key={card.id} card={card} />
+          <SingleCard
+            key={card.id}
+            card={card}
+            handleChoice={handleChoice}
+          />
         ))}
       </div>
     </div>
