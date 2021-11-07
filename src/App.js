@@ -44,17 +44,27 @@ function App() {
     setTurns(prevTurns => prevTurns + 1);
   }
 
+  // compare selected cards
   useEffect(() => {
     if (choiceOne && choiceTwo) {
       if (choiceOne.src === choiceTwo.src) {
-        console.log('match');
+        setCards(prevCards => prevCards.map(
+          card => {
+            if (card.src === choiceOne.src) {
+              return { ...card, matched: true };
+            } else {
+              return card;
+            }
+          }
+        ));
         resetChoices();
       } else {
-        console.log('no match');
         resetChoices();
       }
     }
   }, [choiceOne, choiceTwo]);
+
+  console.log(cards);
 
   return (
     <div className="App">
